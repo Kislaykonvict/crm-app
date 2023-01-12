@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const app = express();
-const config = require('./config/serverConfig')
+const config = require('./config/serverConfig');
+const { createRoutes } = require('./routes/parent.routes');
 
 app.use(express.json());
 
@@ -17,6 +18,8 @@ mongoose.connect('mongodb://localhost/crm_db', { family : 4}, (err) => {
         })
     }
 })
+
+createRoutes(app);
 
 app.get('/', (req, res) => {
     res.send(`Welcome to the CRM application !`)
