@@ -2,7 +2,8 @@ const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const constants = require('../utils/constants');
 const jwt = require('jsonwebtoken');
-const config = require('../config/serverConfig')
+const config = require('../config/serverConfig');
+const { userResponse } = require('../utils/objectConvertor');
 
 exports.signUp = async (req, res) => {
     const body = req.body;
@@ -11,11 +12,11 @@ exports.signUp = async (req, res) => {
 
     try {
 
-        const email = await User.findOne({ email : req.body.email });
+        const email = await User.findOne({ email : body.email });
         if(email) {
-            res.status(409).send({
+            return res.status(409).send({
                 message : `This email has already been registered !`
-            })
+            });
         }
 
         if(userType !== constants.userTypes.customer) {
@@ -33,16 +34,8 @@ exports.signUp = async (req, res) => {
 
     
         const user = await User.create(userObj);
-
-        const responseObj = {
-            name : user.name,
-            userId : user.userId,
-            email : user.email,
-            userType : user.userType,
-            userStatus : user.userStatus
-        }
         console.log(`User has been registered successfully !`);
-        res.status(201).send(responseObj);
+        res.status(201).send(userResponse(user));
         
     } catch (error) {
         console.log(error.message);
@@ -61,7 +54,7 @@ exports.signIn = async (req, res) => {
     if(body.userId) {
         queryObj.userId = body.userId;
     }
-    if(email) {
+    if(body.email) {
         queryObj.email = body.email;
     }
 
@@ -91,14 +84,10 @@ exports.signIn = async (req, res) => {
             expiresIn : 86400  // 1d
         });
 
-        res.status(200).send({
-            name : userInDb.name,
-            userId : userInDb.userId,
-            email : userInDb.email,
-            userType : userInDb.userType,
-            userStatus : userInDb.userStatus,
-            token : token
-        });
+        let response = userResponse(userInDb)
+        response.accessToken = token
+
+        res.status(200).send(response);
         
     } catch (error) {
         console.log(error.message);
