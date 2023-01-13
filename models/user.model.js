@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
         type : String,
         enum : constants.userStatus,
         default : constants.userStatus.approved
+    },
+    ticketCreated : {
+        type : [mongoose.SchemaTypes.ObjectId],
+        ref : 'Ticket'
+    },
+    ticketAssigned : {
+        type : [mongoose.SchemaTypes.ObjectId],
+        ref : 'Ticket'
     }
 
 },

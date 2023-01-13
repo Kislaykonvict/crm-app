@@ -22,5 +22,5 @@ mongoose.connect('mongodb://localhost/crm_db', { family : 4}, (err) => {
 createRoutes(app);
 
 app.get('/', (req, res) => {
-    res.send(`Welcome to the CRM application !`)
+    res.send(`Welcome to the CRM application !`);
 })

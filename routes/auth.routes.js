@@ -4,7 +4,7 @@ const { verifyToken } = require('../middlewares/authValidator');
 const { userReqVal } = require('../middlewares/userValidator');
 const router = express.Router();
 
-router.post('/signUp', [userReqVal], signUp);
-router.post('/signIn', signIn);
+router.post("/signUp", [userReqVal], signUp);
+router.post("/signIn", signIn);
 
 module.exports = router
