@@ -47,7 +47,7 @@ exports.updateTicket = async (req, res) => {
     const body = req.body
     try {
         const ticketInDb = await Ticket.findOne({_id : reqId});
-        if(ticketInDb.reporter == req.userId) {
+        if(ticketInDb.reporter == req.userId || ticketInDb.assignee == req.userId || req.role == constants.userTypes.admin) {
             ticketInDb.title = body.title ?? ticketInDb.title,
             ticketInDb.status = body.status ?? ticketInDb.status,
             ticketInDb.description = body.description ?? ticketInDb.description,
@@ -59,7 +59,7 @@ exports.updateTicket = async (req, res) => {
         else {
             console.log("Ticket was being updated by someone who has not created the ticket");
             res.status(401).send({
-                message: "Ticket can be updated only by the customer who created it"
+                message: "Ticket can be updated only by the Customer who created it or the Engineer who is assigned to it."
             });
         }
         
@@ -72,11 +72,15 @@ exports.updateTicket = async (req, res) => {
 }
 
 exports.getAllTickets = async (req, res) => {
-    const queryObj = {
-        reporter : req.userId
-    };
+    const queryObj = {};
     if(req.query.status) {
         queryObj.status = req.query.status;
+    }
+    if(req.role === constants.userTypes.engineer) {
+        queryObj.assignee = req.userId;
+    }
+    if(req.role === constants.userTypes.customer) {
+        queryObj.reporter = req.userId;
     }
     try {
         const ticketsInDb = await Ticket.find(queryObj);
